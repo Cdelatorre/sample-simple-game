@@ -1,12 +1,12 @@
 class Player {
-  constructor(board) {
+  constructor(board, character) {
     this.board = board;
-    this.width = 20;
-    this.height = 40;
+    this.width = 40;
+    this.height = 60;
     this.x = 0;
     this.y0 = MAIN_FLOOR;
     this.y = this.y0;
-    this.vy = 5;
+    this.vy = 10;
     this.vx = 5;
     this.isMiddle = false;
     this.bullets = [];
@@ -14,15 +14,23 @@ class Player {
     this.element = document.createElement("div");
     this.element.style.position = "absolute";
     this.element.className = "player";
-    this.element.style.backgroundColor = "red";
+    this.element.style.backgroundImage = `url('./assets/img/${character}.png')`;
+    this.element.style.backgroundPosition = "center";
+    this.element.style.backgroundSize = "cover";
+    this.element.style.backgroundRepeat = "no-repeat";
+
     this.setListeners();
 
-    this.movements = {
+    this.actions = {
+      isJumping: false,
       up: false,
       down: false,
       left: false,
       right: false,
+      canShoot: true,
     };
+
+    this.lives = 11;
   }
 
   draw() {
@@ -41,19 +49,22 @@ class Player {
   setListeners() {
     window.addEventListener("keydown", (event) => {
       switch (event.key) {
-        case "ArrowUp":
-          this.movements.up = true;
-          break;
-        case "ArrowDown":
-          this.movements.down = true;
-          break;
+        // case "ArrowUp":
+        //   this.actions.up = true;
+        //   break;
+        // case "ArrowDown":
+        //   this.actions.down = true;
+        //   break;
         case "ArrowLeft":
-          this.movements.left = true;
+          this.actions.left = true;
           break;
         case "ArrowRight":
-          this.movements.right = true;
+          this.actions.right = true;
           break;
         case " ":
+          this.actions.isJumping = true;
+          break;
+        case "z":
           console.log("shoot");
           this.shoot();
           break;
@@ -62,17 +73,17 @@ class Player {
 
     window.addEventListener("keyup", (event) => {
       switch (event.key) {
-        case "ArrowUp":
-          this.movements.up = false;
-          break;
-        case "ArrowDown":
-          this.movements.down = false;
-          break;
+        // case "ArrowUp":
+        //   this.actions.up = false;
+        //   break;
+        // case "ArrowDown":
+        //   this.actions.down = false;
+        //   break;
         case "ArrowLeft":
-          this.movements.left = false;
+          this.actions.left = false;
           break;
         case "ArrowRight":
-          this.movements.right = false;
+          this.actions.right = false;
           break;
       }
     });
@@ -80,16 +91,26 @@ class Player {
 
   move() {
     // MOVEMENTS
-
-    if (this.movements.up) {
+    if (this.actions.isJumping) {
       this.y += this.vy;
-    } else if (this.movements.down) {
-      this.y -= this.vy;
+      this.vy -= 0.6;
+
+      if (this.y < this.y0) {
+        this.y = this.y0;
+        this.actions.isJumping = false;
+        this.vy = 10;
+      }
     }
 
-    if (this.movements.left) {
+    // if (this.actions.up) {
+    //   this.y += this.vy;
+    // } else if (this.actions.down) {
+    //   this.y -= this.vy;
+    // }
+
+    if (this.actions.left) {
       this.x -= this.vx;
-    } else if (this.movements.right) {
+    } else if (this.actions.right) {
       this.x += this.vx;
     }
 
@@ -118,9 +139,29 @@ class Player {
   }
 
   shoot() {
-    console.log("entro en el metodo shoot");
-    this.bullets.push(
-      new Bullet(this.board, this.x + this.width / 2, this.y + this.height / 2)
+    if (this.actions.canShoot) {
+      this.bullets.push(
+        new Bullet(
+          this.board,
+          this.x + this.width / 2,
+          this.y + this.height / 2
+        )
+      );
+
+      this.actions.canShoot = false;
+
+      setTimeout(() => {
+        this.actions.canShoot = true;
+      }, 1000);
+    }
+  }
+
+  collideWith(entity) {
+    return (
+      this.x < entity.x + entity.width &&
+      this.x + this.width > entity.x &&
+      this.y < entity.y + entity.height &&
+      this.height + this.y > entity.y
     );
   }
 }
