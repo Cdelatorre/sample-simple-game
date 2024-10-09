@@ -2,6 +2,7 @@ window.addEventListener("load", function () {
   const characterCards = document.querySelectorAll(".character-card");
   const characterSelector = document.getElementById("character-selector");
   const startButton = document.getElementById("start-btn");
+  const bgSound = document.getElementById("bg-sound");
   const board = document.getElementById("game-board");
   let datacharacter = null;
 
@@ -24,5 +25,6 @@ window.addEventListener("load", function () {
     characterSelector.remove();
     const game = new Game(board, datacharacter);
     game.start();
+    bgSound.play();
   });
 });

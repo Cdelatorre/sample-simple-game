@@ -29,7 +29,7 @@ class Player {
       right: false,
       canShoot: true,
     };
-
+    this.jumpSound = document.querySelector("#jump-sound");
     this.lives = 11;
   }
 
@@ -63,6 +63,7 @@ class Player {
           break;
         case " ":
           this.actions.isJumping = true;
+          this.jumpSound.play();
           break;
         case "z":
           console.log("shoot");
@@ -84,6 +85,9 @@ class Player {
           break;
         case "ArrowRight":
           this.actions.right = false;
+          break;
+        case " ":
+          this.vy -= 4;
           break;
       }
     });
