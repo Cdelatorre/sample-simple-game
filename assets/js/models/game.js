@@ -10,8 +10,6 @@ class Game {
       (itemData) => new Item(this.board, itemData.itemType, itemData.x)
     );
 
-    console.log(character);
-
     this.enemyTick = 100;
     this.tick = 0;
     this.interval = null;
@@ -23,11 +21,11 @@ class Game {
       this.move();
       this.draw();
       this.checkCollisions();
-
       this.tick++;
 
       if (this.tick % this.enemyTick === 0) {
         this.enemies.push(new Enemy(this.board));
+        this._cleanup();
       }
       // this.cleanup();
     }, 1000 / 60);
@@ -36,6 +34,7 @@ class Game {
   }
 
   move() {
+    console.log(this.enemies);
     this.player.move();
     this.clouds.move(this.player);
     this.background.move(this.player);
@@ -51,7 +50,34 @@ class Game {
     });
   }
 
-  cleanup() {}
+  _cleanup() {
+    this.enemies = this.enemies.filter((enemy) => {
+      if (enemy.x < -enemy.width) {
+        enemy.element.remove();
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    this.items = this.items.filter((item) => {
+      if (item.x < -item.width) {
+        item.element.remove();
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    this.player.bullets = this.player.bullets.filter((bullet) => {
+      if (bullet.x > this.board.clientWidth) {
+        bullet.element.remove();
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
 
   draw() {
     this.background.draw();

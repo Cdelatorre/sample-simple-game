@@ -98,6 +98,7 @@ class Player {
     if (this.actions.right) {
       this.animationTick++;
       this.element.style.transform = `scaleX(1)`;
+
       if (this.animationTick <= 10) {
         this.element.style.backgroundImage = `url('./assets/img/mario-1.png')`;
       } else if (this.animationTick <= 20) {
