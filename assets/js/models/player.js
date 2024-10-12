@@ -20,6 +20,7 @@ class Player {
     this.element.style.backgroundRepeat = "no-repeat";
 
     this.setListeners();
+    this.animationTick = 0;
 
     this.actions = {
       isJumping: false,
@@ -93,6 +94,33 @@ class Player {
     });
   }
 
+  animate() {
+    if (this.actions.right) {
+      this.animationTick++;
+      this.element.style.transform = `scaleX(1)`;
+      if (this.animationTick <= 10) {
+        this.element.style.backgroundImage = `url('./assets/img/mario-1.png')`;
+      } else if (this.animationTick <= 20) {
+        this.element.style.backgroundImage = `url('./assets/img/mario-2.png')`;
+      } else {
+        this.animationTick = 0;
+      }
+    } else if (this.actions.left) {
+      this.animationTick++;
+      this.element.style.transform = `scaleX(-1)`;
+
+      if (this.animationTick <= 10) {
+        this.element.style.backgroundImage = `url('./assets/img/mario-1.png')`;
+      } else if (this.animationTick <= 20) {
+        this.element.style.backgroundImage = `url('./assets/img/mario-2.png')`;
+      } else {
+        this.animationTick = 0;
+      }
+    } else {
+      this.animationTick = 0;
+    }
+  }
+
   move() {
     // MOVEMENTS
     if (this.actions.isJumping) {
@@ -140,6 +168,8 @@ class Player {
     this.bullets.forEach((bullet) => {
       bullet.move();
     });
+
+    this.animate();
   }
 
   shoot() {
